@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Coin Prices</title>
+  </head>
+  <body>
+    <h1>Coin Prices</h1>
+    <table>
+      <tr>
+        <th>Coin</th>
+        <th>Symbol</th>
+        <th>Price (USD)</th>
+      </tr>
+    </table>
+    <script>
+      // Fetch data from CoinGecko API
+      fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&per_page=10')
+        .then(response => response.json())
+        .then(data => {
+          // Create rows for each coin
+          data.forEach(coin => {
+            const table = document.querySelector('table');
+            const row = table.insertRow(-1);
+            const nameCell = row.insertCell(0);
+            const symbolCell = row.insertCell(1);
+            const priceCell = row.insertCell(2);
+            nameCell.innerHTML = coin.name;
+            symbolCell.innerHTML = coin.symbol.toUpperCase();
+            priceCell.innerHTML = coin.current_price;
+          });
+        })
+        .catch(error => console.error(error));
+    </script>
+  </body>
+</html>

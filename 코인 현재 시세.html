@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> API 테스트 </title>
+    <link type="text/css" href="js/bootstrap.min.css" rel="stylesheet">
+</head>
+<script src="js/jquery.js"></script>
+<script>
+$(document).ready(function() {
+		$("button").click(function() {
+			$.ajax({
+                url:"https://api.bithumb.com/public/ticker/ALL",
+                type:"GET",
+                dataType:"json",
+                success:function(data) {
+                    console.log(data);
+                    $("#coin").empty();
+
+                    var test_keys = Object.keys(data.data);
+                    var test_values = Object.values(data.data);
+                 
+                    
+                    var tb = "<table><tr><th>자산명</th><th>현재가</th></tr>";
+
+                    for (var i in test_keys) {
+                        var $name = test_keys[i];
+                        var $value = test_values[i].opening_price;
+
+                        var row = "";
+                        row += "<tr>";
+                        row += "<td>" + $name + "</td>";
+                        row += "<td>" + $value + "</td>";
+                        row += "</tr>";
+
+                        tb += row;
+                    }
+
+                    tb += "</table>"
+                    $("#mv").append(tb);
+                    $("#mv > table").addClass("table table-striped text-center");
+
+
+                    var total_array = data.RealtimeCoin.row;
+                    var total_length = total_array.length;
+                    var tb = "<table><tr><th>자산명</th><th>현재가</th><th>변동률(당일)</th><th>거래금액(24H)</th></tr>";
+
+                    for (var i in total_array) {
+                        var $date = total_array[i].MSRDT;
+
+                        var original_date = String($date);
+                        // 2023 / 04 / 14/ 12/ 00
+                        var data = original_date.substring(0, 4);
+                        var date_month = original_date.substring(4, 6);
+                        var date_day = original_date.substring(6, 8);
+                        var date_hour = original_date.substring(8, 10);
+                        var date_min = original_date.substring(10, 12);
+                        var full_date = date_year + "년 " + date_month + "월 " + date_day + "일 " + date_hour + "시 " + date_min + "분";
+                        
+                        var $region = total_array[i].MSRSTE_NM;
+                        var $dust = total_array[i].PM10;
+                        var $super_dust = total_array[i].PM25;
+                        var $NO2 = total_array[i].NO2;
+
+                        var row = "";
+                        row += "<tr>";
+                        row += "<td>" + full_date + "</td>";
+                        row += "<td>" + $region + "</td>";
+                        row += "<td>" + $NO2 + "</td>";
+                        
+                
+
+                
+                       
+                        row += "</tr>";
+                        
+                        tb += row;
+
+                     
+                    
+            
+                    }
+
+                    tb += "</table>"
+                    $("#mv").append(tb);
+                    $("#mv > table").addClass("table table-striped text-center");
+
+                }, error: function() {
+                    var err_message = "요청할 수 없어서 에러가 발생했어요!";
+                    console.log(err_message);
+                    $("#mv").text(err_message);
+                }
+            })
+		})
+    });
+
+    //12시 4분 -> 12시 04분
+function setClock(){
+    var dateInfo = new Date(); 
+    var hour = modifyNumber(dateInfo.getHours());
+    var min = modifyNumber(dateInfo.getMinutes());
+    var sec = modifyNumber(dateInfo.getSeconds());
+    var year = dateInfo.getFullYear();
+    var month = dateInfo.getMonth()+1;
+    var date = dateInfo.getDate();
+    document.getElementById("date").innerHTML = "현재시각 : " + year + "년 " + month + "월 " + 
+                                                date + "일 " + hour + ":" + min  + ":" + sec;
+}
+
+function modifyNumber(time){
+    if(parseInt(time)<10){
+        return "0" + time;
+    }
+    else
+        return time;
+}
+
+window.onload = function() {
+    setClock();
+    setInterval(setClock,1000);
+}
+
+
+$('#search').click(function(){
+            $.ajax({
+                url:'https://api.bithumb.com/public/ticker/ALL',
+                type:"GET",
+                data: {"query": $("#asset").val()},
+                success:function(data) {
+
+                    console.log(data);
+
+                    $("#assettable").empty();
+                    var total_array = data.RealtimeCoin.row;
+                    var total_length = total_array.length;
+                    var tb = "<table><tr><th>자산명</th><th>현재가</th><th>변동률(당일)</th><th>거래금액(24H)</th></tr>";
+                    
+                    tb += "</table>"
+                    $("#asset").append(tb);
+                    $("#asset > table").addClass("table table-striped text-center");
+
+                    for (var i in test_keys) {
+                    var $name = test_keys[i];
+                    var $value = test_values[i].opening_price;
+
+                    var row = "";
+                    row += "<tr>";
+                    row += "<td>" + $name + "</td>";
+                    row += "<td>" + $value + "</td>";
+                    row += "</tr>";
+
+                    tb += row;
+                   }
+
+
+                   for (var i in total_array) {
+                        var $picture = total_array[i].thumbnail;
+                        var $content_1 = total_array[i].title;
+                        var $content_2 = total_array[i].authors.join(", ");
+                        // var apl_array = [A, B, C, D];
+                        // var apl_string = apl_array.join(", ");
+                        var $content_3 = total_array[i].contents;
+                        var $content_4 = total_array[i].publisher;
+                        var $content_5 = total_array[i].sale_price;
+
+                        var row = "";
+                        row += "<tr>";
+                        row += "<td><img src=" + $picture + "></td>";
+                        row += `<td><ul>
+                            <li><b>자산명</b>
+                                <ul>
+                                    <li>${$content_1}</li>
+                                </ul>
+                            </li>
+                            <li><b>저자</b>
+                                <ul>
+                                    <li>${$content_2}</li>
+                                </ul>
+                            </li>
+                            <li><b>내용</b>
+                                <ul>
+                                    <li>${$content_3}</li>
+                                </ul>
+                            </li>
+                            <li><b>출판사</b>
+                                <ul>
+                                    <li>${$content_4}</li>
+                                </ul>
+                            </li>
+                            <li><b>가격</b>
+                                <ul>
+                                    <li>${$content_5}</li>
+                                </ul>
+                            </li></td>`;
+                        row += "</tr>";
+                        
+                        tb += row;
+                    }
+
+                    tb += "</table>"
+                    $("#searchtable").append(tb);
+                    $("#searchtable > table").addClass("table table-striped");
+
+                }, error:function() {
+                    var err_message = "요청할 수 없어서 에러가 발생했어요!";
+                    $("#searchtable").text(err_message);
+                }
+            })
+        });
+</script>
+</script>
+<body>
+    <h1 class="text-center" style="margin-top: 20px"> 빗썸 기준 현재 코인 시세입니다. </h1>
+    <hr>
+    <div class="text-center">
+        <h3 id="date" class="text-center" style="display: inline-block;"></h3>
+        <button class="btn btn-primary" style="margin-left: 30px;">실시간 데이터 조회</button>
+    </div>
+    <hr>
+    <div id="mv"></div>
+    <hr>
+    <p class="text-bg-info text-center"> <b>Copyright by</b> Doyoung Kim</p>
+</body>
+</html>

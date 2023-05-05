@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> 코인 현재 시세 조회 </title>
+    <link rel = "stylesheet" href = "css\코인.css">
+    <link type="text/css" href="js/bootstrap.min.css" rel="stylesheet">
+</head>
+<script src="js/jquery.js"></script>
+<script>
+// REST API키   903cdb1e77d6e7b2da86ffa0985ad340    
+    $(function () {
+        $('#search').click(function(){
+            $.ajax({
+                url:`https://api.bithumb.com/public/ticker/${$("#coin").val()}_krw`,
+                type:"GET",
+                success:function(data) {
+
+                    console.log(data);
+
+                    $("#searchtable").empty();
+                    var tb = "<table><tr><th>자산명</th><th>현재가(KRW)</th><th>변동률(당일)</th><th>거래금액(24H)</th></tr>";
+
+                    var $name = $("#coin").val();
+                    var $price = data.data.opening_price;
+                    var $rate = data.data.fluctate_rate_24H;
+                    var $value24h = data.data.acc_trade_value_24H;
+
+                    var row = "";
+                    row += "<tr>";
+                    row += "<td>" + $name + "</td>";
+                    row += "<td>" + $price + "</td>";
+                    row += "<td>" + $rate + "</td>";
+                    row += "<td>" + $value24h + "</td>";
+                    row += "</tr>";
+
+                    tb += row;
+
+                    tb += "</table>"
+                    $("#searchtable").append(tb);
+                    $("#searchtable > table").addClass("table table-striped");
+
+
+
+
+
+
+
+                }, error:function() {
+                    var err_message = "요청할 수 없어서 에러가 발생했어요!";
+                    $("#searchtable").text(err_message);
+                }
+            })
+        })
+    });
+</script>
+<body>
+    <h1 class="text-center" style="margin-top: 20px;"> 코인 자산 조회 </h1>
+    <hr>
+    <h5 class="text-center"> 검색하고 싶은 자산을 입력하세요! </h5>
+    <div class="text-center">
+        <input id="coin" placeholder="ex: btc">
+        <button class="btn btn-success" id="search"> 검색 </button> 
+    </div>
+    <div id="searchtable"></div>
+    <hr>
+    <p style="background-color:Tomato;"> <b>Copyright by</b> DoYoung Kim</p>
+
+    
+    
+</body>
+</html>
